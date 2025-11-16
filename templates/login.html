@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - NeuroAid</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Welcome Text -->
+    <div class="welcome">
+      <h1>Welcome Back</h1>
+      <p>Sign in to access your NeuroAid account</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login">
+      <div class="heading">
+        <h2>Sign In</h2>
+      </div>
+      
+      <form action="{{ url_for('login') }}" method="POST" id="loginForm">
+        <!-- Username or Email -->
+        <div class="input-group">
+          <span><i class="fa fa-user"></i></span>
+          <input type="text" 
+                 name="username" 
+                 id="username"
+                 placeholder="Username or Email" 
+                 required
+                 autocomplete="username"
+                 value="{{ request.form.get('username', '') }}">
+        </div>
+
+        <!-- Password -->
+        <div class="input-group">
+          <span><i class="fa fa-lock"></i></span>
+          <input type="password" 
+                 name="password" 
+                 id="password"
+                 placeholder="Password" 
+                 required
+                 autocomplete="current-password">
+          <span class="toggle-password" onclick="togglePassword()">
+            <i class="fa fa-eye" id="password-eye"></i>
+          </span>
+        </div>
+
+        <!-- Remember Me & Forgot Password -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 14px;">
+          <label style="display: flex; align-items: center; color: var(--gray-600); cursor: pointer;">
+            <input type="checkbox" name="remember" style="margin-right: 6px;">
+            Remember me
+          </label>
+          <a href="#" style="color: var(--primary-blue); text-decoration: none;">
+            Forgot password?
+          </a>
+        </div>
+
+        <!-- Error Message -->
+        {% if error %}
+          <div class="error" style="padding: 12px; background: #fee; border-radius: 6px; color: #c00; margin-bottom: 16px; font-size: 14px;">
+            <i class="fa fa-exclamation-circle"></i> {{ error }}
+          </div>
+        {% endif %}
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn" id="loginBtn">
+          <i class="fa fa-sign-in"></i> Sign In
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <div style="position: relative; text-align: center; margin: 24px 0;">
+        <span style="background: white; padding: 0 16px; color: var(--gray-500); font-size: 13px; position: relative; z-index: 1;">
+          OR
+        </span>
+        <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #e5e7eb;"></div>
+      </div>
+
+      <!-- Sign Up Link -->
+      <p style="text-align: center; margin-top: 20px; color: var(--gray-600); font-size: 14px;">
+        Don't have an account? 
+        <a href="{{ url_for('signup') }}" 
+           style="color: var(--primary-blue); font-weight: 600; text-decoration: none;">
+          Create Account
+        </a>
+      </p>
+
+      <!-- Back to Home -->
+      <p style="text-align: center; margin-top: 12px;">
+        <a href="{{ url_for('home') }}" 
+           style="color: var(--gray-500); font-size: 13px; text-decoration: none;">
+          <i class="fa fa-arrow-left"></i> Back to Home
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Toggle password visibility
+    function togglePassword() {
+      const passwordField = document.getElementById('password');
+      const icon = document.getElementById('password-eye');
+      
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        passwordField.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    // Form submission
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      const loginBtn = document.getElementById('loginBtn');
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Signing in...';
+    });
+
+    // Auto-focus on username field
+    document.getElementById('username').focus();
+  </script>
+</body>
+</html>

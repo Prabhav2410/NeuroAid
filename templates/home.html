@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="headline">
+  <h1>Welcome to NeuroAid</h1>
+  <p>Your AI-powered healthcare assistant for instant disease prediction</p>
+  <div style="margin-top: 24px;">
+    <a href="{{ url_for('symptoms_page') }}" class="btn" style="text-decoration: none; display: inline-block;">
+      Get Started Now
+    </a>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+  <!-- Feature 1: Disease Prediction -->
+  <div class="feature-card">
+    <i class="fa fa-heartbeat" style="color: #ef4444;"></i>
+    <h3>Smart Disease Prediction</h3>
+    <p>
+      Enter your symptoms and get instant disease predictions powered by advanced 
+      machine learning algorithms trained on thousands of medical cases.
+    </p>
+    <a href="{{ url_for('symptoms_page') }}" style="color: var(--primary-blue); font-weight: 600; text-decoration: none;">
+      Try Now →
+    </a>
+  </div>
+
+  <!-- Feature 2: AI Chatbot -->
+  <div class="feature-card">
+    <i class="fa fa-comments" style="color: #8b5cf6;"></i>
+    <h3>AI Health Assistant</h3>
+    <p>
+      Chat with our intelligent health assistant powered by Gemini AI. 
+      Get instant answers to your health questions 24/7.
+    </p>
+    <a href="{{ url_for('chatbot') }}" style="color: var(--primary-blue); font-weight: 600; text-decoration: none;">
+      Chat Now →
+    </a>
+  </div>
+
+  <!-- Feature 3: Accuracy -->
+  <div class="feature-card">
+    <i class="fa fa-check-circle" style="color: #10b981;"></i>
+    <h3>High Accuracy Results</h3>
+    <p>
+      Our Random Forest model achieves high accuracy by analyzing symptom 
+      patterns and providing top 3 most likely diagnoses with confidence scores.
+    </p>
+  </div>
+
+  <!-- Feature 4: Privacy -->
+  <div class="feature-card">
+    <i class="fa fa-lock" style="color: #f59e0b;"></i>
+    <h3>Secure & Private</h3>
+    <p>
+      Your health data is encrypted and stored securely. We prioritize your 
+      privacy and never share your personal information with third parties.
+    </p>
+  </div>
+
+  <!-- Feature 5: Fast Results -->
+  <div class="feature-card">
+    <i class="fa fa-bolt" style="color: #eab308;"></i>
+    <h3>Instant Results</h3>
+    <p>
+      Get disease predictions in seconds. No waiting, no appointments needed. 
+      Our AI processes your symptoms instantly and provides actionable insights.
+    </p>
+  </div>
+
+  <!-- Feature 6: Easy to Use -->
+  <div class="feature-card">
+    <i class="fa fa-mobile" style="color: #06b6d4;"></i>
+    <h3>User-Friendly Interface</h3>
+    <p>
+      Simple, intuitive design that anyone can use. Just select your symptoms 
+      from our comprehensive list and get results immediately.
+    </p>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section style="margin-top: 60px; padding: 40px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 16px;">
+  <h2 style="text-align: center; margin-bottom: 40px;">How It Works</h2>
+  
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 32px;">
+    <!-- Step 1 -->
+    <div style="text-align: center;">
+      <div style="width: 80px; height: 80px; background: var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: white; font-size: 32px; font-weight: bold; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);">
+        1
+      </div>
+      <h4 style="font-size: 20px; margin-bottom: 12px; color: var(--gray-900);">Select Symptoms</h4>
+      <p style="color: var(--gray-600); line-height: 1.7;">
+        Choose from our comprehensive list of symptoms that match your current condition.
+      </p>
+    </div>
+
+    <!-- Step 2 -->
+    <div style="text-align: center;">
+      <div style="width: 80px; height: 80px; background: var(--accent-purple); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: white; font-size: 32px; font-weight: bold; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);">
+        2
+      </div>
+      <h4 style="font-size: 20px; margin-bottom: 12px; color: var(--gray-900);">AI Analysis</h4>
+      <p style="color: var(--gray-600); line-height: 1.7;">
+        Our machine learning model analyzes your symptoms against thousands of medical cases.
+      </p>
+    </div>
+
+    <!-- Step 3 -->
+    <div style="text-align: center;">
+      <div style="width: 80px; height: 80px; background: var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: white; font-size: 32px; font-weight: bold; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+        3
+      </div>
+      <h4 style="font-size: 20px; margin-bottom: 12px; color: var(--gray-900);">Get Results</h4>
+      <p style="color: var(--gray-600); line-height: 1.7;">
+        Receive top 3 possible diagnoses with confidence scores and recommendations.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section style="margin-top: 60px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; text-align: center;">
+  <div style="padding: 32px; background: white; border-radius: 12px; box-shadow: var(--shadow-md); border-top: 4px solid var(--primary-blue);">
+    <div style="font-size: 48px; font-weight: 800; color: var(--primary-blue); margin-bottom: 8px;">95%</div>
+    <div style="font-size: 16px; color: var(--gray-600); font-weight: 500;">Prediction Accuracy</div>
+  </div>
+  
+  <div style="padding: 32px; background: white; border-radius: 12px; box-shadow: var(--shadow-md); border-top: 4px solid var(--accent-purple);">
+    <div style="font-size: 48px; font-weight: 800; color: var(--accent-purple); margin-bottom: 8px;">400+</div>
+    <div style="font-size: 16px; color: var(--gray-600); font-weight: 500;">Diseases Tracked</div>
+  </div>
+  
+  <div style="padding: 32px; background: white; border-radius: 12px; box-shadow: var(--shadow-md); border-top: 4px solid var(--accent-green);">
+    <div style="font-size: 48px; font-weight: 800; color: var(--accent-green); margin-bottom: 8px;">24/7</div>
+    <div style="font-size: 16px; color: var(--gray-600); font-weight: 500;">AI Support Available</div>
+  </div>
+  
+  <div style="padding: 32px; background: white; border-radius: 12px; box-shadow: var(--shadow-md); border-top: 4px solid #f59e0b;">
+    <div style="font-size: 48px; font-weight: 800; color: #f59e0b; margin-bottom: 8px;">&lt;3s</div>
+    <div style="font-size: 16px; color: var(--gray-600); font-weight: 500;">Average Response Time</div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section style="margin-top: 60px; padding: 60px 40px; background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple)); border-radius: 16px; text-align: center; color: white; box-shadow: var(--shadow-xl);">
+  <h2 style="font-size: 36px; margin-bottom: 16px; color: white;">Ready to Get Started?</h2>
+  <p style="font-size: 18px; margin-bottom: 32px; opacity: 0.95;">
+    Join thousands of users who trust NeuroAid for quick and accurate health insights
+  </p>
+  <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+    <a href="{{ url_for('symptoms_page') }}" class="btn" style="text-decoration: none; display: inline-block; background: white !important; color: var(--primary-blue) !important;">
+      Check Your Symptoms
+    </a>
+    <a href="{{ url_for('chatbot') }}" class="btn" style="text-decoration: none; display: inline-block; background: rgba(255, 255, 255, 0.2) !important; backdrop-filter: blur(10px);">
+      Chat with AI
+    </a>
+  </div>
+</section>
+
+<style>
+  /* Add to existing styles */
+  .feature-card a {
+    display: inline-block;
+    margin-top: 16px;
+    transition: transform 0.2s ease;
+  }
+  
+  .feature-card a:hover {
+    transform: translateX(4px);
+  }
+</style>
+
+{% endblock %}

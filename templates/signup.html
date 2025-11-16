@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - NeuroAid</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .password-strength {
+      margin-top: 8px;
+      font-size: 12px;
+    }
+    .password-strength span {
+      display: inline-block;
+      width: 25%;
+      height: 4px;
+      background: #ddd;
+      margin-right: 2px;
+      border-radius: 2px;
+      transition: background 0.3s;
+    }
+    .password-strength.weak span:first-child { background: #ef4444; }
+    .password-strength.medium span:nth-child(-n+2) { background: #f59e0b; }
+    .password-strength.strong span:nth-child(-n+3) { background: #10b981; }
+    .password-strength.very-strong span { background: #10b981; }
+    
+    .strength-text {
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--gray-600);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="welcome">
+      <h1>Join NeuroAid</h1>
+      <p>Create your account to get started with AI-powered healthcare</p>
+    </div>
+
+    <div class="login">
+      <div class="heading">
+        <h2>Sign Up</h2>
+      </div>
+      
+      <form action="{{ url_for('signup') }}" method="POST" id="signupForm">
+        <!-- Full Name -->
+        <div class="input-group">
+          <span><i class="fa fa-user"></i></span>
+          <input type="text" 
+                 name="fullname" 
+                 id="fullname"
+                 placeholder="Full Name" 
+                 required
+                 minlength="2"
+                 value="{{ request.form.get('fullname', '') }}">
+        </div>
+
+        <!-- Email -->
+        <div class="input-group">
+          <span><i class="fa fa-envelope"></i></span>
+          <input type="email" 
+                 name="email" 
+                 id="email"
+                 placeholder="Email Address" 
+                 required
+                 value="{{ request.form.get('email', '') }}">
+        </div>
+
+        <!-- Username -->
+        <div class="input-group">
+          <span><i class="fa fa-user-circle"></i></span>
+          <input type="text" 
+                 name="username" 
+                 id="username"
+                 placeholder="Username (min 3 characters)" 
+                 required
+                 minlength="3"
+                 pattern="[a-zA-Z0-9_]+"
+                 title="Only letters, numbers and underscores allowed"
+                 value="{{ request.form.get('username', '') }}">
+        </div>
+
+        <!-- Password -->
+        <div class="input-group">
+          <span><i class="fa fa-lock"></i></span>
+          <input type="password" 
+                 name="password" 
+                 id="password"
+                 placeholder="Password (min 6 characters)" 
+                 required
+                 minlength="6">
+          <span class="toggle-password" onclick="togglePassword('password')">
+            <i class="fa fa-eye" id="password-eye"></i>
+          </span>
+        </div>
+        <div class="password-strength" id="passwordStrength">
+          <span></span><span></span><span></span><span></span>
+          <small class="strength-text" id="strengthText"></small>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="input-group">
+          <span><i class="fa fa-lock"></i></span>
+          <input type="password" 
+                 name="confirm_password" 
+                 id="confirm_password"
+                 placeholder="Confirm Password" 
+                 required
+                 minlength="6">
+          <span class="toggle-password" onclick="togglePassword('confirm_password')">
+            <i class="fa fa-eye" id="confirm_password-eye"></i>
+          </span>
+        </div>
+
+        <!-- Error Message -->
+        {% if error %}
+          <div class="error" style="padding: 12px; background: #fee; border-radius: 6px; color: #c00; margin-bottom: 16px; font-size: 14px;">
+            <i class="fa fa-exclamation-circle"></i> {{ error }}
+          </div>
+        {% endif %}
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn" id="submitBtn">
+          <i class="fa fa-user-plus"></i> Create Account
+        </button>
+      </form>
+
+      <!-- Login Link -->
+      <p style="text-align: center; margin-top: 20px; color: var(--gray-600); font-size: 14px;">
+        Already have an account? 
+        <a href="{{ url_for('login') }}" 
+           style="color: var(--primary-blue); font-weight: 600; text-decoration: none;">
+          Sign In
+        </a>
+      </p>
+
+      <!-- Back to Home -->
+      <p style="text-align: center; margin-top: 12px;">
+        <a href="{{ url_for('home') }}" 
+           style="color: var(--gray-500); font-size: 13px; text-decoration: none;">
+          <i class="fa fa-arrow-left"></i> Back to Home
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Password strength checker
+    const passwordInput = document.getElementById('password');
+    const strengthIndicator = document.getElementById('passwordStrength');
+    const strengthText = document.getElementById('strengthText');
+    const confirmPassword = document.getElementById('confirm_password');
+    const form = document.getElementById('signupForm');
+
+    passwordInput.addEventListener('input', function() {
+      const password = this.value;
+      let strength = 0;
+      
+      if (password.length >= 6) strength++;
+      if (password.length >= 10) strength++;
+      if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+      if (/\d/.test(password)) strength++;
+      if (/[^a-zA-Z0-9]/.test(password)) strength++;
+      
+      strengthIndicator.className = 'password-strength';
+      
+      if (strength <= 1) {
+        strengthIndicator.classList.add('weak');
+        strengthText.textContent = 'Weak password';
+        strengthText.style.color = '#ef4444';
+      } else if (strength === 2) {
+        strengthIndicator.classList.add('medium');
+        strengthText.textContent = 'Medium password';
+        strengthText.style.color = '#f59e0b';
+      } else if (strength === 3) {
+        strengthIndicator.classList.add('strong');
+        strengthText.textContent = 'Strong password';
+        strengthText.style.color = '#10b981';
+      } else {
+        strengthIndicator.classList.add('very-strong');
+        strengthText.textContent = 'Very strong password';
+        strengthText.style.color = '#10b981';
+      }
+    });
+
+    // Password match validation
+    confirmPassword.addEventListener('input', function() {
+      if (this.value !== passwordInput.value) {
+        this.setCustomValidity('Passwords do not match');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
+
+    passwordInput.addEventListener('input', function() {
+      if (confirmPassword.value && confirmPassword.value !== this.value) {
+        confirmPassword.setCustomValidity('Passwords do not match');
+      } else {
+        confirmPassword.setCustomValidity('');
+      }
+    });
+
+    // Toggle password visibility
+    function togglePassword(fieldId) {
+      const field = document.getElementById(fieldId);
+      const icon = document.getElementById(fieldId + '-eye');
+      
+      if (field.type === 'password') {
+        field.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        field.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Creating account...';
+    });
+
+    // Username validation - only letters, numbers, underscores
+    document.getElementById('username').addEventListener('input', function() {
+      this.value = this.value.replace(/[^a-zA-Z0-9_]/g, '');
+    });
+  </script>
+</body>
+</html>

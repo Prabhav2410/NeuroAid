@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  .results-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+
+  .results-header {
+    background: linear-gradient(135deg, var(--primary-blue), #1e40af);
+    color: white;
+    padding: 40px;
+    border-radius: 16px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+
+  .results-header h1 {
+    margin: 0 0 16px;
+    font-size: 36px;
+    font-weight: 700;
+  }
+
+  .selected-symptoms {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .selected-symptoms h3 {
+    color: var(--primary-blue);
+    margin-bottom: 16px;
+    font-size: 20px;
+  }
+
+  .symptom-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .symptom-badge {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: var(--primary-blue);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 2px solid var(--primary-blue);
+  }
+
+  .prediction-card {
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-left: 5px solid var(--primary-blue);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .prediction-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  }
+
+  .prediction-card.rank-1 {
+    border-left-color: #10b981;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  }
+
+  .rank-badge {
+    display: inline-block;
+    background: var(--primary-blue);
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .prediction-card.rank-1 .rank-badge {
+    background: #10b981;
+  }
+
+  .disease-name {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 16px;
+  }
+
+  .confidence-section {
+    margin-bottom: 20px;
+  }
+
+  .confidence-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--gray-700);
+  }
+
+  .confidence-bar {
+    height: 14px;
+    background: var(--gray-200);
+    border-radius: 7px;
+    overflow: hidden;
+  }
+
+  .confidence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-blue), #3b82f6);
+    border-radius: 7px;
+    transition: width 1.2s ease;
+  }
+
+  .prediction-card.rank-1 .confidence-fill {
+    background: linear-gradient(90deg, #10b981, #059669);
+  }
+
+  .medication-box {
+    background: #f0f9ff;
+    border: 2px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 16px;
+  }
+
+  .medication-box h4 {
+    color: var(--primary-blue);
+    margin-bottom: 8px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .medication-box p {
+    color: var(--gray-700);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .disclaimer {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 30px 0;
+  }
+
+  .disclaimer h4 {
+    color: #92400e;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .disclaimer p {
+    color: #78350f;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 16px;
+    margin-top: 30px;
+  }
+
+  .btn {
+    padding: 14px 32px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary-blue), #1e40af);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+  }
+
+  .btn-secondary {
+    background: white;
+    color: var(--gray-700);
+    border: 2px solid var(--gray-300);
+  }
+
+  .btn-secondary:hover {
+    background: var(--gray-50);
+    border-color: var(--gray-400);
+  }
+</style>
+
+<div class="results-container">
+  <!-- Header -->
+  <div class="results-header">
+    <h1><i class="fas fa-chart-line"></i> Prediction Results</h1>
+    <p>AI-powered disease analysis based on your symptoms</p>
+  </div>
+
+  <!-- Selected Symptoms -->
+  <div class="selected-symptoms">
+    <h3><i class="fas fa-clipboard-check"></i> Selected Symptoms</h3>
+    <div class="symptom-badges">
+      {% for symptom in selected %}
+      <span class="symptom-badge">{{ symptom.replace('_', ' ').title() }}</span>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Prediction Results -->
+  {% if result %}
+    {% for disease, confidence, medication in result %}
+      {% if confidence > 0 %}
+      <div class="prediction-card rank-{{ loop.index }}">
+        <div class="rank-badge">{{ loop.index }}</div>
+        <div class="disease-name">{{ disease }}</div>
+        
+        <div class="confidence-section">
+          <div class="confidence-label">
+            <span>Confidence Level</span>
+            <span>{{ "%.1f"|format(confidence) }}%</span>
+          </div>
+          <div class="confidence-bar">
+            <div class="confidence-fill" style="width: {{ confidence }}%"></div>
+          </div>
+        </div>
+
+        {% if medication and medication != "No standard medication available" %}
+        <div class="medication-box">
+          <h4><i class="fas fa-pills"></i> Common Medications</h4>
+          <p>{{ medication }}</p>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    {% endfor %}
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <h4><i class="fas fa-exclamation-triangle"></i> Important Disclaimer</h4>
+      <p>This is an AI-powered preliminary assessment tool and should not replace professional medical advice. Please consult a qualified healthcare provider for accurate diagnosis and treatment.</p>
+    </div>
+  {% else %}
+    <div class="prediction-card">
+      <p style="text-align: center; color: var(--gray-600); font-size: 16px;">
+        <i class="fas fa-info-circle"></i> No predictions available. Please try selecting different symptoms.
+      </p>
+    </div>
+  {% endif %}
+
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <a href="{{ url_for('symptoms_page') }}" class="btn btn-primary">
+      <i class="fas fa-redo"></i> Try Again
+    </a>
+    <a href="{{ url_for('home') }}" class="btn btn-secondary">
+      <i class="fas fa-home"></i> Back to Home
+    </a>
+  </div>
+</div>
+
+<script>
+  // Animate confidence bars on load
+  window.addEventListener('load', function() {
+    setTimeout(() => {
+      document.querySelectorAll('.confidence-fill').forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+          bar.style.width = width;
+        }, 100);
+      });
+    }, 100);
+  });
+</script>
+{% endblock %}

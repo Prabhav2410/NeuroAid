@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;  /* light background */
+    }
+
+    .marginlefting { margin-left: 60px !important; }
+    .displaynone { display: none !important; }
+    .displayblock { display: block !important; }
+
+    .logo {
+    height: 70px;       /* container height */
+    padding: 10px 10px; /* spacing around the logo */
+}
+
+.logo img {
+    max-height: 100%;   /* fit container height */
+    width: auto;        /* maintain aspect ratio */
+    display: block;
+    margin: 0 auto;
+}
+
+/* When sidebar is collapsed */
+.ui.sidebar.very.thin .logo img {
+    max-height: 50px;   /* slightly smaller when collapsed */
+}
+
+    .ui.container {
+      margin-top: 20px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="ui sidebar vertical left menu overlay visible" style=" overflow: visible !important;">
+    <div class="item logo">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" />    </div>
+    <div class="ui accordion">
+      <a class="item" href="{{ url_for('home') }}"><i class="home icon"></i> Home</a>
+      <a class="item" href="{{ url_for('about') }}"><i class="info circle icon"></i> About</a>
+      <a class="item" href="{{ url_for('symptoms_page') }}"><i class="stethoscope icon"></i> Symptoms</a>
+      <a class="item" href="{{ url_for('skin_checker') }}"><i class="camera icon"></i> Skin Checker</a>
+      <a class="item" href="{{ url_for('xray_checker') }}"><i class="camera icon"></i> Xray Checker</a>
+
+      <a class="item" href="{{ url_for('chatbot') }}"><i class="comments icon"></i> Chatbot</a>
+
+
+      {% if session.get("user") %}
+        <a class="item"><i class="user icon"></i> Hello, {{ session['user'] }}</a>
+        <a class="item" href="{{ url_for('logout') }}"><i class="sign-out icon"></i> Logout</a>
+      {% else %}
+        <a class="item" href="{{ url_for('login') }}"><i class="sign-in icon"></i> Login</a>
+        <a class="item" href="{{ url_for('signup') }}"><i class="signup icon"></i> Signup</a>     
+      {% endif %}
+    </div>
+  </div>
+  
+
+  <!-- Top bar -->
+  <div class="pusher">
+    <div class="ui menu asd borderless" style="border-radius: 0!important; border: 0; margin-left: 260px;">
+      <a class="item openbtn">
+        <i class="icon content"></i>
+      </a>
+      <h2 class="logo">Neuro<span>Aid</span></h2>
+      <div class="right menu">
+        <div class="ui dropdown item">
+          Language <i class="dropdown icon"></i>
+          <div class="menu">
+            <a class="item">English</a>
+            <a class="item">Hindi</a>
+          </div>
+        </div>
+        {% if not session.get("user") %}
+        <div class="item">
+          <div class="ui primary button">Sign Up</div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="ui container">
+      {% block content %}
+      <h2>Welcome to {{ title }}</h2>
+      {% endblock %}
+    </div>
+  </div>
+    <footer class="footer-distributed">
+    <div class="footer-left">
+      <h3>Neuro<span>Aid</span></h3>
+      <p class="footer-links">
+        <a href="{{ url_for('home') }}">Home</a> |
+        <a href="{{ url_for('about') }}">About</a> |
+        <a href="{{ url_for('contact') }}">Contact</a>
+      </p>
+      <p class="footer-company-name">© 2025 NueroAid</p>
+    </div>
+    <div class="footer-center">
+      <i class="fa fa-map-marker"></i>
+      <p><span>New Delhi</span>, India</p>
+      <i class="fa fa-envelope"></i>
+      <p><a href="mailto:support@medcareai.com">support@nueroaid.com</a></p>
+    </div>
+    <div class="footer-right">
+      <p class="footer-company-about">
+        <span>About NeuroAid</span>
+        AI-powered healthcare assistant to predict diseases and assist patients.
+      </p>
+      <div class="footer-icons">
+        <a href="#"><i class="fa fa-facebook"></i></a>
+        <a href="#"><i class="fa fa-twitter"></i></a>
+        <a href="#"><i class="fa fa-linkedin"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.js"></script>
+  <script>
+    $(".openbtn").on("click", function() {
+      $(".ui.sidebar").toggleClass("very thin icon");
+      $(".asd").toggleClass("marginlefting");
+      $(".sidebar z").toggleClass("displaynone");
+      $(".ui.accordion").toggleClass("displaynone");
+      $(".ui.dropdown.item").toggleClass("displayblock");
+      $(".logo").find('img').toggle();
+    });
+
+    $(".ui.dropdown").dropdown({
+      allowCategorySelection: true,
+      transition: "fade up",
+      context: 'sidebar',
+      on: "hover"
+    });
+
+    $('.ui.accordion').accordion();
+  </script>
+</body>
+</html>

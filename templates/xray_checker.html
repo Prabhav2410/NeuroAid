@@ -1,0 +1,557 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  .xray-checker-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .upload-area {
+    border: 3px dashed var(--gray-300);
+    border-radius: 16px;
+    padding: 60px 40px;
+    text-align: center;
+    background: var(--gray-50);
+    transition: all var(--transition-normal);
+    cursor: pointer;
+    margin-bottom: 32px;
+  }
+
+  .upload-area:hover {
+    border-color: var(--primary-blue);
+    background: rgba(37, 99, 235, 0.05);
+  }
+
+  .upload-area.dragover {
+    border-color: var(--primary-blue);
+    background: rgba(37, 99, 235, 0.1);
+    transform: scale(1.02);
+  }
+
+  .upload-icon {
+    font-size: 64px;
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+  }
+
+  .upload-text {
+    font-size: 18px;
+    color: var(--gray-700);
+    margin-bottom: 12px;
+  }
+
+  .upload-hint {
+    font-size: 14px;
+    color: var(--gray-500);
+  }
+
+  #fileInput {
+    display: none;
+  }
+
+  .preview-container {
+    display: none;
+    margin-top: 32px;
+    text-align: center;
+  }
+
+  .preview-image {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 24px;
+  }
+
+  .results-container {
+    display: none;
+    margin-top: 32px;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    padding: 32px;
+    border-radius: 16px;
+    border-left: 5px solid var(--primary-blue);
+  }
+
+  .result-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all var(--transition-fast);
+  }
+
+  .result-card:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .result-disease {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+
+  .result-confidence {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-blue);
+  }
+
+  .top-result {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    border-left: 4px solid var(--accent-green);
+    padding: 24px;
+  }
+
+  .top-result .result-disease {
+    font-size: 24px;
+    color: var(--accent-green);
+  }
+
+  .top-result .result-confidence {
+    font-size: 32px;
+    color: var(--accent-green);
+  }
+
+  .severity-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 12px;
+  }
+
+  .severity-healthy {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .severity-moderate {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .severity-serious {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .warning-banner {
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .warning-banner i {
+    font-size: 32px;
+    color: #f59e0b;
+  }
+
+  .warning-text {
+    flex: 1;
+    color: #92400e;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .btn-analyze {
+    background: linear-gradient(135deg, var(--accent-green), #059669) !important;
+    padding: 16px 48px !important;
+    font-size: 18px !important;
+    margin-top: 16px;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+  }
+
+  .btn-analyze:hover {
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4) !important;
+  }
+
+  .info-section {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    margin-top: 32px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .info-section h3 {
+    color: var(--primary-blue);
+    margin-bottom: 16px;
+    font-size: 20px;
+  }
+
+  .info-section ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .info-section li {
+    padding: 8px 0;
+    padding-left: 28px;
+    position: relative;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .info-section li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--accent-green);
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  .disease-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 32px;
+  }
+
+  .disease-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
+  }
+
+  .disease-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .disease-card .icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+
+  .disease-card h4 {
+    color: var(--gray-900);
+    margin-bottom: 8px;
+    font-size: 18px;
+  }
+
+  .disease-card p {
+    color: var(--gray-600);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+</style>
+
+<div class="xray-checker-container">
+  <div class="headline">
+    <h1>🫁 X-Ray Disease Analyzer</h1>
+    <p>Upload a chest X-ray image for AI-powered disease detection</p>
+  </div>
+
+  <!-- Upload Area -->
+  <div class="upload-area" id="uploadArea">
+    <div class="upload-icon">
+      <i class="fa fa-cloud-upload"></i>
+    </div>
+    <div class="upload-text">
+      <strong>Click to upload</strong> or drag and drop
+    </div>
+    <div class="upload-hint">
+      Chest X-ray images: PNG, JPG, JPEG, GIF, BMP (Max 10MB)
+    </div>
+    <input type="file" id="fileInput" accept="image/*" />
+  </div>
+
+  <!-- Preview Section -->
+  <div class="preview-container" id="previewContainer">
+    <h3>Selected X-Ray Image</h3>
+    <img id="previewImage" class="preview-image" alt="Preview" />
+    <br>
+    <button class="btn btn-analyze" id="analyzeBtn">
+      <i class="fa fa-search"></i> Analyze X-Ray
+    </button>
+  </div>
+
+  <!-- Results Section -->
+  <div class="results-container" id="resultsContainer">
+    <h2>📊 Analysis Results</h2>
+    <div id="resultsContent"></div>
+    
+    <div class="warning-banner">
+      <i class="fa fa-exclamation-triangle"></i>
+      <div class="warning-text">
+        <strong>Medical Disclaimer:</strong> This AI analysis is for informational purposes only and should not replace professional medical advice. Please consult a healthcare provider for accurate diagnosis and treatment.
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 24px;">
+      <button class="btn" onclick="location.reload()">
+        <i class="fa fa-refresh"></i> Analyze Another X-Ray
+      </button>
+    </div>
+  </div>
+
+  <!-- Disease Information Cards -->
+  <div class="disease-cards">
+    <div class="disease-card">
+      <div class="icon">🩺</div>
+      <h4>Normal</h4>
+      <p>Healthy lung tissue with no abnormalities detected</p>
+    </div>
+    <div class="disease-card">
+      <div class="icon">🫁</div>
+      <h4>Pneumonia</h4>
+      <p>Lung infection causing inflammation and fluid buildup</p>
+    </div>
+    <div class="disease-card">
+      <div class="icon">😷</div>
+      <h4>COVID-19</h4>
+      <p>Viral infection affecting the respiratory system</p>
+    </div>
+    <div class="disease-card">
+      <div class="icon">🦠</div>
+      <h4>Tuberculosis</h4>
+      <p>Bacterial infection primarily affecting the lungs</p>
+    </div>
+  </div>
+
+  <!-- Information Section -->
+  <div class="info-section">
+    <h3>📋 How It Works</h3>
+    <ul>
+      <li>Upload a clear chest X-ray image</li>
+      <li>Our AI model analyzes the image using deep learning</li>
+      <li>Get instant predictions for multiple respiratory conditions</li>
+      <li>Results include confidence scores and severity assessment</li>
+      <li>Always consult a healthcare professional for proper diagnosis</li>
+    </ul>
+  </div>
+
+  <div class="info-section">
+    <h3>💡 Tips for Best Results</h3>
+    <ul>
+      <li>Use high-quality, clear X-ray images</li>
+      <li>Ensure the entire chest area is visible</li>
+      <li>Avoid images with excessive noise or artifacts</li>
+      <li>Standard PA or AP chest X-rays work best</li>
+      <li>Images should be properly oriented (upright)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div style="text-align: center; color: white;">
+    <div class="loading-spinner"></div>
+    <p style="margin-top: 20px; font-size: 18px;">Analyzing X-ray image...</p>
+    <p style="font-size: 14px; opacity: 0.8;">This may take a few seconds</p>
+  </div>
+</div>
+
+<script>
+  let selectedFile = null;
+
+  const uploadArea = document.getElementById('uploadArea');
+  const fileInput = document.getElementById('fileInput');
+  const previewContainer = document.getElementById('previewContainer');
+  const previewImage = document.getElementById('previewImage');
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  const resultsContainer = document.getElementById('resultsContainer');
+  const resultsContent = document.getElementById('resultsContent');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+
+  // Click to upload
+  uploadArea.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  // File selection
+  fileInput.addEventListener('change', (e) => {
+    handleFileSelect(e.target.files[0]);
+  });
+
+  // Drag and drop
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+  });
+
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+  });
+
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    handleFileSelect(e.dataTransfer.files[0]);
+  });
+
+  // Handle file selection
+  function handleFileSelect(file) {
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/bmp'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Please upload a valid image file (PNG, JPG, JPEG, GIF, BMP)');
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size must be less than 10MB');
+      return;
+    }
+
+    selectedFile = file;
+
+    // Show preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImage.src = e.target.result;
+      previewContainer.style.display = 'block';
+      resultsContainer.style.display = 'none';
+      
+      // Scroll to preview
+      previewContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Analyze button
+  analyzeBtn.addEventListener('click', async () => {
+    if (!selectedFile) return;
+
+    // Show loading
+    loadingOverlay.style.display = 'flex';
+
+    // Create form data
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      const response = await fetch('/upload-xray-image', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        displayResults(data);
+        resultsContainer.style.display = 'block';
+        
+        // Scroll to results
+        setTimeout(() => {
+          resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      } else {
+        alert('Error: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred during analysis: ' + error.message);
+    } finally {
+      loadingOverlay.style.display = 'none';
+    }
+  });
+
+  // Display results
+  function displayResults(data) {
+    let html = '';
+
+    // Top result
+    html += `
+      <div class="result-card top-result">
+        <div>
+          <div style="font-size: 14px; color: var(--gray-600); margin-bottom: 8px;">
+            <i class="fa fa-trophy"></i> Top Prediction
+          </div>
+          <div class="result-disease">${data.top_prediction}</div>
+          <div class="severity-badge ${getSeverityClass(data.severity)}">
+            ${data.severity}
+          </div>
+        </div>
+        <div class="result-confidence">${data.top_confidence.toFixed(1)}%</div>
+      </div>
+    `;
+
+    // Confidence indicator
+    if (!data.is_confident) {
+      html += `
+        <div style="background: #fef3c7; padding: 16px; border-radius: 8px; margin-bottom: 16px; text-align: center;">
+          <i class="fa fa-info-circle" style="color: #f59e0b;"></i>
+          <strong style="color: #92400e;"> Low Confidence Prediction</strong>
+          <p style="margin: 8px 0 0; color: #92400e; font-size: 14px;">
+            The model is uncertain. Please consult a healthcare professional.
+          </p>
+        </div>
+      `;
+    }
+
+    // Other predictions
+    if (data.all_predictions.length > 1) {
+      html += '<h3 style="margin-top: 24px; margin-bottom: 16px; color: var(--gray-700);">Other Possible Conditions</h3>';
+      
+      for (let i = 1; i < Math.min(5, data.all_predictions.length); i++) {
+        const pred = data.all_predictions[i];
+        html += `
+          <div class="result-card">
+            <div class="result-disease">${pred.disease}</div>
+            <div class="result-confidence">${pred.confidence.toFixed(1)}%</div>
+          </div>
+        `;
+      }
+    }
+
+    resultsContent.innerHTML = html;
+  }
+
+  // Get severity badge class
+  function getSeverityClass(severity) {
+    if (severity.toLowerCase().includes('healthy')) {
+      return 'severity-healthy';
+    } else if (severity.toLowerCase().includes('serious')) {
+      return 'severity-serious';
+    } else {
+      return 'severity-moderate';
+    }
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,92 @@
+#########################
+# PYTHON
+#########################
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+#########################
+# ENVIRONMENT VARIABLES
+#########################
+.env
+*.env
+.env.bak
+
+#########################
+# VIRTUAL ENVIRONMENTS
+#########################
+venv/
+venv311/
+env/
+tf_wsl/
+
+#########################
+# MACHINE LEARNING FILES
+#########################
+*.h5
+*.hdf5
+*.pb
+*.tflite
+*.pt
+*.pth
+*.ckpt
+*.weights
+*.pkl
+*.pickle
+*.joblib
+
+#########################
+# DATASETS & CSV
+#########################
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.zip
+*.rar
+*.tar.gz
+*.npy
+*.npz
+
+#########################
+# GENERATED OUTPUTS
+#########################
+*.json
+*.log
+*.png
+*.jpg
+*.jpeg
+
+#########################
+# USER UPLOADED FILES
+#########################
+uploads/
+static/uploads/
+
+#########################
+# PROJECT SPECIFIC DATA FOLDERS
+#########################
+skin_disease_dataset/
+xray_dataset/
+dataset/
+dataset_sorted/
+query/
+
+#########################
+# IDE / EDITOR
+#########################
+.vscode/
+.idea/
+
+#########################
+# SYSTEM FILES
+#########################
+.DS_Store
+Thumbs.db
+
+#########################
+# BACKUP FILES
+#########################
+*.bak
+*.backup
